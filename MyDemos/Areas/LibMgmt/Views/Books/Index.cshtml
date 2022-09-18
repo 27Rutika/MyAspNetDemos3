@@ -1,0 +1,45 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using MyDemos.Models.Enums
+@model IEnumerable<MyDemos.Models.Book>
+
+@inject UserManager<IdentityUser> _userManager
+
+@{
+    ViewData["Title"] = "Index";
+
+    var user = await _userManager.GetUserAsync(this.User);
+    var isAdmin = await _userManager.IsInRoleAsync(user, MyIdentityRoleNames.LibraryAdmin.ToString());
+}
+
+
+<h1>Index</h1>
+
+<p>
+     @if (isAdmin)
+    {
+        <a class="btn btn-primary" asp-action="Create">Create New</a>
+    }
+    else {
+        <a class="btn btn-primary disabled" href="#">Create New</a>
+    }
+</p>
+<div class="card-columns">
+    @foreach (var book in Model) {
+        <div class="card">
+            <div class="card-header">
+                @book.BookTitle
+            </div>
+            <div class="card-body">
+                @Html.DisplayNameFor(modelItem => book.Category.CategoryName) : @book.Category.CategoryName
+                <br />
+                @Html.DisplayNameFor(modelItem => book.NumberOfCopies) : @book.NumberOfCopies
+            </div>
+            <div class="card-footer">
+                <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@book.BookId">Edit</a>
+                <a class="btn btn-sm btn-primary" asp-action="Details" asp-route-id="@book.BookId">Details</a>
+                <a class="btn btn-sm btn-primary" asp-action="Delete" asp-route-id="@book.BookId">Delete</a>
+            </div>
+        </div>
+    }
+</div>
+<a asp-area="LibMgmt" asp-controller="Categories" asp-action="Index">List of Categories</a>
